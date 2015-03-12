@@ -1,1 +1,3 @@
 # eetools
+Requirements:
+ * python-alsaaudio
