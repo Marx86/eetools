@@ -1,0 +1,39 @@
+#!/usr/bin/env python
+#-*-coding:utf8-*-
+
+from optparse import OptionParser
+from generator.generate import (sq_wave, sine_wave, white_noise, pink_noise,
+                                brown_noise)
+
+
+# Dummy for future gettext
+_ = lambda x: x
+
+
+parser = OptionParser()
+parser.add_option('-f', '--frequensy', dest='freq', help=_(u'Generated frequensy'), metavar='<integer>', type='int')
+parser.add_option('-g', '--gain', dest='gain', help=_(u'Wave gain from 0.0 to 1.0'), metavar='<float>', type='float', default=1.0)
+parser.add_option('-s', '--sine', action='store_true', dest='sine', help=_(u'Sine wave [default]'))
+parser.add_option('-m', '--square', action='store_true', dest='square', help=_(u'Square wave'))
+parser.add_option('-n', '--noise', dest='noise', type='choice',
+                  help=_(u'Generate noise types: white, pink or brown'),
+                  metavar='<type>', choices=['white', 'pink', 'brown'])
+
+options, args = parser.parse_args()
+
+
+if __name__ == '__main__':
+    if not options.freq and not options.noise:
+        parser.print_help()
+        exit(1)
+
+    if options.noise == 'pink':
+        pink_noise(options.gain)
+    elif options.noise == 'brown':
+        brown_noise(options.gain)
+    elif options.noise == 'white':
+        white_noise(options.gain)
+    elif options.square:
+        sq_wave(options.freq, options.gain)
+    else:
+        sine_wave(options.freq, options.gain)
