@@ -2,7 +2,7 @@
 #-*-coding:utf8-*-
 
 from optparse import OptionParser
-from generator.generate import (sq_wave, sine_wave, white_noise, pink_noise,
+from utils.generate import (sq_wave, sine_wave, white_noise, pink_noise,
                                 brown_noise)
 
 

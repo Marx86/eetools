@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import struct
 import alsaaudio
 from math import pi, sin
 from random import uniform
@@ -14,24 +15,28 @@ period_size = frame_rate
 
 pcm = alsaaudio.PCM(alsaaudio.PCM_PLAYBACK)
 pcm.setchannels(channels)
-pcm.setformat(alsaaudio.PCM_FORMAT_U8)
+pcm.setformat(alsaaudio.PCM_FORMAT_FLOAT_LE)
 pcm.setrate(frame_rate)
 pcm.setperiodsize(period_size)
 
 
-gen_sample = lambda s, g: chr(int(((s + 1) * (2 ** 8 - 1) / 2) * g)) * channels
+gen_sample = lambda s, g: struct.pack('f', s*g) * channels
 
 
-def sine_wave(freq, gain=1.0):
+def sine_wave(freq, gain=1.0, periods=None):
     max_val = 2 * pi
     i = 0.0
+    period_num = 1
 
     while True:
         pcm.write(gen_sample(sin(i), gain))
         i += max_val / (frame_rate / float(freq))
 
         if i > max_val:
+            period_num += 1
             i = 0.0
+            if periods and period_num > periods:
+                break
 
 
 def sq_wave(freq, gain=1.0):
