@@ -1,0 +1,48 @@
+#!/usr/bin/env python
+#-*-coding:utf8-*-
+
+import threading
+from time import sleep
+from optparse import OptionParser
+from utils.generate import sine_wave
+from utils.capture import capture_samples
+from utils.ts_params import run_manual
+
+
+
+# Dummy for future gettext
+_ = lambda x: x
+
+
+parser = OptionParser()
+parser.add_option('-l', '--low-freq', dest='l_freq', help=_(u'Lower frequensy range'), metavar='<integer>', type='int', default=20)
+parser.add_option('-t', '--high-freq', dest='h_freq', help=_(u'Higher frequensy range'), metavar='<integer>', type='int', default=200)
+parser.add_option('-g', '--gain', dest='gain', help=_(u'Wave gain from 0.0 to 1.0'), metavar='<float>', type='float', default=1.0)
+
+parser.add_option('--R1', dest='R1', help=_(u'"R1" in Ohms'), metavar='<float>', type='float')
+parser.add_option('--R2', dest='R2', help=_(u'"R2" in Ohms'), metavar='<float>', type='float')
+parser.add_option('-r', '--Re', dest='Re', help=_(u'Speaker "Re" in Ohms'), metavar='<float>', type='float')
+parser.add_option('-m', '--manual', action='store_true', dest='manual', help=_(u'Manual mode'), )
+parser.add_option('-p', '--manual-parameter', type='choice', dest='manual_parameter', default='U',
+                  help=_(u'Manual measured parameter [I or U]'), metavar='<type>', choices=['I', 'U'])
+
+
+
+options, args = parser.parse_args()
+
+if __name__ == '__main__':
+    if options.manual and options.R1 and options.R2 and options.Re:
+        run_manual(options.manual_parameter, options.R1, options.R2, options.Re)
+        exit()
+    else:
+        samples = {}
+        for freq in range(options.l_freq, options.h_freq):
+            # Generate 1 second tone
+            t = threading.Thread(target=sine_wave, args=(freq,), kwargs={'gain': options.gain, 'periods': freq})
+            t.start()
+
+            samples[freq] = capture_samples()
+            sleep(1.1)
+
+        for i, v in enumerate(samples[20]):
+            print(','.join(str(samples[f][i]) for f in samples))
