@@ -21,6 +21,7 @@ parser.add_option('-g', '--gain', dest='gain', help=_(u'Wave gain from 0.0 to 1.
 
 parser.add_option('--R1', dest='R1', help=_(u'"R1" in Ohms'), metavar='<float>', type='float')
 parser.add_option('--R2', dest='R2', help=_(u'"R2" in Ohms'), metavar='<float>', type='float')
+parser.add_option('--Vb', dest='Vb', help=_(u'Closed box volume in liters'), metavar='<float>', type='float')
 parser.add_option('-r', '--Re', dest='Re', help=_(u'Speaker "Re" in Ohms'), metavar='<float>', type='float')
 parser.add_option('-m', '--manual', action='store_true', dest='manual', help=_(u'Manual mode'), )
 parser.add_option('-p', '--manual-parameter', type='choice', dest='manual_parameter', default='U',
@@ -31,8 +32,8 @@ parser.add_option('-p', '--manual-parameter', type='choice', dest='manual_parame
 options, args = parser.parse_args()
 
 if __name__ == '__main__':
-    if options.manual and options.R1 and options.R2 and options.Re:
-        run_manual(options.manual_parameter, options.R1, options.R2, options.Re)
+    if options.manual:
+        run_manual(options.manual_parameter, options.R1, options.R2, options.Re, options.Vb)
         exit()
     else:
         samples = {}
