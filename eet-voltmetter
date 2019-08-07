@@ -1,0 +1,54 @@
+#!/usr/bin/env python
+#-*-coding:utf8-*-
+
+import sys
+import math
+from time import sleep
+from optparse import OptionParser
+from utils.capture import capture_samples
+
+
+
+if __name__ == '__main__':
+    print('Left voltage in "mV"\t\t\t\t\t| Right voltage in "mV"')
+    while True:
+        try:
+            Vals = []
+            Vars = []
+            Vrmsls = []
+            Vrmsrs = []
+            Vtruermsls = []
+            Vtruermsrs = []
+            for i in range(150):
+                l, r = capture_samples(4800)
+                ls = map(abs, l)
+                rs = map(abs, r)
+                Vals.append(max(ls) * 1000)
+                Vars.append(max(rs) * 1000)
+                Vrmsls.append((max(ls) * 1000) / math.sqrt(2))
+                Vrmsrs.append((max(rs) * 1000) / math.sqrt(2))
+                Vtruermsls.append((sum(ls) / len(ls)) * 1000)
+                Vtruermsrs.append((sum(rs) / len(rs)) * 1000)
+
+            Val = sum(Vals) / len(Vals)
+            Vrmsl = sum(Vrmsls) / len(Vrmsls)
+            Vtruermsl = sum(Vtruermsls) / len(Vtruermsls)
+            Var = sum(Vars) / len(Vars)
+            Vrmsr = sum(Vrmsrs) / len(Vrmsrs)
+            Vtruermsr = sum(Vtruermsrs) / len(Vtruermsrs)
+            sys.stdout.write(
+                (
+                    '\rAmpl: {0:8.3f} \t'
+                    'RMS: {1:8.3f} \t'
+                    'True RMS: {2:8.3f} \t'
+                    '| Ampl: {3:8.3f} \t'
+                    'RMS: {4:8.3f} \t'
+                    'True RMS: {5:8.3f}'
+                ).format(Val, Vrmsl, Vtruermsl, Var, Vrmsr, Vtruermsr)
+            )
+            sys.stdout.flush()
+        except KeyboardInterrupt:
+            print('\nExit...')
+            break
+
+exit()
